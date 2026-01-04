@@ -49,7 +49,7 @@ void AjazzGUI::changeMode() {
     try {
         GetKeyboard()->openHandle();
 
-        GetKeyboard()->setModeAsync(
+        auto modeFuture = GetKeyboard()->setModeAsync(
                     GetConfig()->mode,
                     r,
                     g,
@@ -58,7 +58,10 @@ void AjazzGUI::changeMode() {
                     GetConfig()->brightness,
                     GetConfig()->speed,
                     GetConfig()->direction);
-        GetKeyboard()->setSleepTimeAsync(GetConfig()->sleep_delay);
+        auto sleepFuture = GetKeyboard()->setSleepTimeAsync(GetConfig()->sleep_delay);
+
+        modeFuture.wait();
+        sleepFuture.wait();
 
         GetKeyboard()->closeHandle();
     } catch (const std::exception& e) {

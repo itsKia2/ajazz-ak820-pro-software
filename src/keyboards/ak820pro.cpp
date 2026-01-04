@@ -7,6 +7,7 @@
 #include <cstring>
 #include <filesystem>
 #include <iostream>
+#include <memory>
 #include <thread>
 #include <lodepng.h>
 
@@ -145,10 +146,10 @@ std::future<void> AK820Pro::setModeAsync(const LightingMode mode, const uint8_t 
             packet.options.direction = direction;
             packet.delimiter = 0xaa55;
 
-            uint8_t data[PACKET_LENGTH];
-            memcpy(data, &packet, PACKET_LENGTH);
+            auto data = std::make_unique<uint8_t[]>(PACKET_LENGTH);
+            memcpy(data.get(), &packet, PACKET_LENGTH);
 
-            const std::vector commands = {START, START_MODE, data, FINISH};
+            const std::vector commands = {START, START_MODE, data.get(), FINISH};
 
             executeHIDCommand(commands);
         });
@@ -177,12 +178,12 @@ void AK820Pro::setSleepTime(const LightSleepTime sleep_time) const {
 
 std::future<void> AK820Pro::setSleepTimeAsync(const LightSleepTime sleep_time) const {
     return std::async(std::launch::async, [=] {
-        uint8_t data[PACKET_LENGTH];
+        auto data = std::make_unique<uint8_t[]>(PACKET_LENGTH);
         data[8] = static_cast<uint8_t>(sleep_time);
         data[PACKET_LENGTH - 1] = 0x55;
         data[PACKET_LENGTH - 2] = 0xaa;
 
-        const std::vector commands = {START, START_SLEEP, data};
+        const std::vector commands = {START, START_SLEEP, data.get()};
 
         executeHIDCommand(commands);
     });
