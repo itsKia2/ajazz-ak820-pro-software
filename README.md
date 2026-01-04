@@ -9,10 +9,19 @@ This is a software to control LEDs, lighting modes, LCD screen and macros
  - [ ] Sound Reaction (??)
 
 ## Installation
-Usual cmake build. You also need to install [hidapi](https://github.com/libusb/hidapi)
+
+### Requirements
+You need to install [hidapi](https://github.com/libusb/hidapi) and [glfw](https://github.com/glfw/glfw)
 ```bash
-sudo apt install libhidapi-dev
+$ pacman -Syu hidapi glfw
 ```
+### Building
+```
+mkdir build
+cmake -S . -B build/
+cmake --build build
+```
+It should create an executable in build/
 
 ## How did I do it
 At first, I thought it would be a good idea to reverse engineer the
